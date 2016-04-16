@@ -21,37 +21,6 @@ void setup() {
     ledm_setDisp(&display);
 }
 
-void onFrameFinished() {}
-void onRowFinished() {}
-
-void onSerial() {
-    static bool escaped = false;
-    int16_t data;
-    while((data = Serial_read()) != -1 ) {
-        if(escaped) {
-            escaped = false;
-            if (data == 0x1b) {                         // ESC + ESC
-                serialDataHandler(data);                // sending an ESC as data
-            } else {                                    // this is a regular escaped byte
-                serialEscapedHandler(data);
-            }
-        } else {
-            if (data == 0x1b) {                         // a first ESC
-                escaped = true;
-            } else {
-                serialDataHandler(data);                // regular data
-            }
-        }
-    }
-}
-
-void serialDataHandler(uint8_t data) {
-    dspm_fill(&display);
-}
-void serialEscapedHandler(uint8_t data) {
-    dspm_clear(&display);
-}
-
 void loop() {
     // TODO: move this shit out of the way
     // binary 144bit counter
@@ -80,4 +49,41 @@ void loop() {
         onRowFinished();
     }
     if (Serial_available()) onSerial();
+}
+
+void onSerial() {
+    static bool escaped = false;
+    int16_t data;
+    while((data = Serial_read()) != -1 ) {
+        if(escaped) {
+            escaped = false;
+            if (data == 0x1b) {                         // ESC + ESC
+                serialDataHandler(data);                // sending an ESC as data
+            } else {                                    // this is a regular escaped byte
+                serialEscapedHandler(data);
+            }
+        } else {
+            if (data == 0x1b) {                         // a first ESC
+                escaped = true;
+            } else {
+                serialDataHandler(data);                // regular data
+            }
+        }
+    }
+}
+
+void onFrameFinished() {
+    // TODO forward this event to some routine
+}
+void onRowFinished() {
+    // TODO forward this event to some routine
+}
+
+void serialDataHandler(uint8_t data) {
+    // TODO forward this event to some routine
+    dspm_fill(&display);
+}
+void serialEscapedHandler(uint8_t data) {
+    // TODO forward this event to some routine
+    dspm_clear(&display);
 }
