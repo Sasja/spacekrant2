@@ -21,24 +21,6 @@ void setup() {
     ledm_setDisp(&display);
 }
 
-// TODO: temporary shit
-void clear() {
-    for(int row=0; row<LEDM_ROWS; row++) {
-        for (int bCol=0; bCol<LEDM_COLBYTES; bCol++) {
-            display.buffer[row][bCol] = 0;
-        }
-    }
-}
-
-// TODO: temporary
-void fill() {
-    for(int row=0; row<LEDM_ROWS; row++) {
-        for (int bCol=0; bCol<LEDM_COLBYTES; bCol++) {
-            display.buffer[row][bCol] = -1;
-        }
-    }
-}
-
 void onFrameFinished() {}
 void onRowFinished() {}
 
@@ -64,8 +46,10 @@ void onSerial() {
 }
 
 void serialDataHandler(uint8_t data) {
+    dspm_fill(&display);
 }
 void serialEscapedHandler(uint8_t data) {
+    dspm_clear(&display);
 }
 
 void loop() {

@@ -14,6 +14,23 @@ const uint8_t dspm_oneMasks[9] = {
 
 // ======================== Implementation ======================
 
+
+void dspm_clear(ledm_display_t *display){
+    for(int row=0; row<LEDM_ROWS; row++) {
+        for (int bCol=0; bCol<LEDM_COLBYTES; bCol++) {
+            display->buffer[row][bCol] = 0;
+        }
+    }
+}
+
+void dspm_fill(ledm_display_t *display){
+    for(int row=0; row<LEDM_ROWS; row++) {
+        for (int bCol=0; bCol<LEDM_COLBYTES; bCol++) {
+            display->buffer[row][bCol] = (uint8_t)-1;
+        }
+    }
+};
+
 uint8_t dspm_writeChar2Display(char c, ledm_display_t *display,
         int8_t rowOffset, int8_t colOffset)
 {

@@ -19,6 +19,8 @@ extern const uint8_t dspm_oneMasks[9];
 extern "C" {
 #endif
 
+void dspm_clear(ledm_display_t *display);
+void dspm_fill(ledm_display_t *display);
 uint8_t dspm_writeChar2Display(char c, ledm_display_t *display,
         int8_t rowOffset, int8_t colOffset);
 uint8_t dspm_writeString2Display(char str[], ledm_display_t *display,
