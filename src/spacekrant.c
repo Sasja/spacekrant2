@@ -72,18 +72,20 @@ void onSerial() {
     }
 }
 
-void onFrameFinished() {
-    // TODO forward this event to some routine
-}
-void onRowFinished() {
-    // TODO forward this event to some routine
+void serialEscapedHandler(uint8_t data) {
+    // TODO change routine
+    dspm_clear(&display);
 }
 
 void serialDataHandler(uint8_t data) {
     // TODO forward this event to some routine
     dspm_fill(&display);
 }
-void serialEscapedHandler(uint8_t data) {
+
+void onFrameFinished() {
     // TODO forward this event to some routine
-    dspm_clear(&display);
+}
+
+void onRowFinished() {
+    // TODO forward this event to some routine
 }
