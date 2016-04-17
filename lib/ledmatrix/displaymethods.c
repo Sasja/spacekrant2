@@ -32,7 +32,7 @@ void dspm_fill(ledm_display_t *display){
 };
 
 uint8_t dspm_writeChar2Display(char c, ledm_display_t *display,
-        int8_t rowOffset, int8_t colOffset)
+        int8_t rowOffset, int16_t colOffset)
 {
     ltr_bitmap_t *bitmap = ltr_lookupBitmap(c);
     uint8_t width = ltr_getCharLength(bitmap);
@@ -66,14 +66,14 @@ uint8_t dspm_writeChar2Display(char c, ledm_display_t *display,
     return width;
 }
 
-uint8_t dspm_writeString2Display(char str[], ledm_display_t *display,
-        int8_t rowOffset, int8_t colOffset) {
-    int8_t dispPos = colOffset;
+uint16_t dspm_writeString2Display(char str[], ledm_display_t *display,
+        int8_t rowOffset, int16_t colOffset) {
+    uint16_t width = 0;
     uint8_t strPos = 0;
-    while(str[strPos] != '\0' && dispPos < LEDM_COLS) {
-        dispPos += dspm_writeChar2Display(str[strPos], display, rowOffset, dispPos);
-        dispPos++;  // add some space between chars
+    while(str[strPos] != '\0') { // && colOffset + width < LEDM_COLS) {
+        width += dspm_writeChar2Display(str[strPos], display, rowOffset, colOffset + width);
+        width++;  // add some space between chars
         strPos++;
     }
-    return dispPos;
+    return width;
 }

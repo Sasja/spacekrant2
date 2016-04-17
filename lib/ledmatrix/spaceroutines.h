@@ -1,33 +1,34 @@
-#ifndef DISPLAYMETHODS_H
-#define DISPLAYMETHODS_H
+#ifndef SPACEROUTINES_H
+#define SPACEROUTINES_H
 
 #include <stdint.h>
 #include "ledmatrix.h"
-#include "letters.h"
 
 // =========================== Constants ========================
 
 // ============================ Macros ==========================
 
 // ========================= API Typedefs =======================
+typedef struct spr_routine {
+    void (*init)(ledm_display_t *dsp);
+    void (*handleData)(uint8_t data, ledm_display_t *dsp);
+    void (*handleFrameTick)(ledm_display_t *dsp);
+    void (*handleRowTick)(ledm_display_t *dsp);
+} spr_routine_t;
 
 // ====================== API Global Variables ==================
-extern const uint8_t dspm_oneMasks[9];
+
+extern spr_routine_t *spr_currentRoutine;
 
 // ========================== API methods =======================
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-void dspm_clear(ledm_display_t *display);
-void dspm_fill(ledm_display_t *display);
-uint8_t dspm_writeChar2Display(char c, ledm_display_t *display,
-        int8_t rowOffset, int16_t colOffset);
-uint16_t dspm_writeString2Display(char str[], ledm_display_t *display,
-        int8_t rowOffset, int16_t colOffset);
+void spr_loadRoutineNr(uint8_t nr);
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* DISPLAYMETHODS_H */
+#endif /* SPACEROUTINES_H */

@@ -1,4 +1,5 @@
 #include "spacekrant.h"
+#include "spaceroutines.h"
 
 // ========================== Constants =========================
 
@@ -22,24 +23,6 @@ void setup() {
 }
 
 void loop() {
-    // TODO: move this shit out of the way
-    // binary 144bit counter
-    // for(int r=LEDM_ROWS-1; r>=0; r--) {
-    //     for(int c=LEDM_COLBYTES-1; c>=0; c--) {
-    //         if(++display.buffer[r][c] != 0) return;
-    //     }
-    // }
-    // delay(1);
-
-    // TODO: move this shit out of the way
-    // infinite scrolling up
-    // static uint8_t i = 0;
-    // clear();
-    // dspm_writeString2Display("wat!\0", &display, i, 3);
-    // dspm_writeString2Display("wat!\0", &display, i-7, 3);
-    // delay(200);
-    // i = (i+1) % 7;
-
     if(display.frameFinishedFlag) {
         display.frameFinishedFlag = false;
         onFrameFinished();
@@ -73,19 +56,18 @@ void onSerial() {
 }
 
 void serialEscapedHandler(uint8_t data) {
-    // TODO change routine
-    dspm_clear(&display);
+    spr_loadRoutineNr(data - 'a');
+    spr_currentRoutine->init(&display);
 }
 
 void serialDataHandler(uint8_t data) {
-    // TODO forward this event to some routine
-    dspm_fill(&display);
+    spr_currentRoutine->handleData(data, &display);
 }
 
 void onFrameFinished() {
-    // TODO forward this event to some routine
+    spr_currentRoutine->handleFrameTick(&display);
 }
 
 void onRowFinished() {
-    // TODO forward this event to some routine
+    spr_currentRoutine->handleRowTick(&display);
 }
