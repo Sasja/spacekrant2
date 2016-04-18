@@ -16,6 +16,9 @@ send each routine some data...
 
 caveat: if you need to send a routine an 0x1B (ESC), then you have to escape ESC with ESC. So double ESC.
 
+# how to talk to the spacekrant
+minicom -D /dev/ttyACM0 -b 9600
+
 # how to write your own spacekrant routine 
 
 TODO
