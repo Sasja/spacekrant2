@@ -215,6 +215,7 @@ void whatsupFrame(ledm_display_t* dsp) {
 
 // =============textScroller======================
 
+uint8_t textScroller_prescaler = 16;
 int16_t textScroller_width = 0;
 int16_t textScroller_offset = 0;
 
@@ -233,14 +234,24 @@ void textScrollerInit(ledm_display_t *dsp) {
 }
 
 void textScrollerData(uint8_t data, ledm_display_t *dsp) {
-    textBuffer_handle(data);
-    textScroller_update(dsp);
+    static bool escaped = false;
+    if(escaped) {                                   // set speed trough double escaped data
+        escaped = false;
+        textScroller_prescaler = 1 + (data - 'a');
+    } else {
+        if (data == 0x1b) {                         // a first ESC
+            escaped = true;
+        } else {
+            textBuffer_handle(data);
+            textScroller_update(dsp);
+        }
+    }
 }
 
 void textScrollerFrame(ledm_display_t *dsp) {
-    static uint8_t prescaler;
-    prescaler = (prescaler + 1) % 8;
-    if(prescaler) return;
+    static uint8_t pcnt;
+    pcnt = (pcnt + 1) % textScroller_prescaler;
+    if(pcnt) return;
     
     textScroller_offset--;
     if(textScroller_offset + textScroller_width <= 0)
