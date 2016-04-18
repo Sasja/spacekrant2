@@ -13,7 +13,7 @@
 
 ltr_bitmap_t *ltr_lookupBitmap(char c) {
     if(c>='a' && c<='z') return &ltr_lowercase[c-'a'];
-    if(c>='A' && c<='Z') return &ltr_lowercase[c-'Z'];
+    if(c>='A' && c<='Z') return &ltr_uppercase[c-'A'];
     switch(c) {
         case ' ': return &ltr_space;
         case '`': return &ltr_space_small;
