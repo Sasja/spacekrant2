@@ -29,5 +29,10 @@ extern ltr_bitmap_t ltr_semicolon;
 extern ltr_bitmap_t ltr_exclamation;
 extern ltr_bitmap_t ltr_dash;
 extern ltr_bitmap_t ltr_at;
+extern ltr_bitmap_t ltr_glider1;
+extern ltr_bitmap_t ltr_glider2;
+extern ltr_bitmap_t ltr_glider3;
+extern ltr_bitmap_t ltr_glider4;
+extern ltr_bitmap_t ltr_lwss;
 
 #endif /* _LETTERS_BITMAPS_H */

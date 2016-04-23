@@ -24,6 +24,8 @@ void dspm_clear(ledm_display_t *display);
 void dspm_fill(ledm_display_t *display);
 uint8_t dspm_writeChar2Display(char c, ledm_display_t *display,
         int8_t rowOffset, int16_t colOffset);
+uint8_t dspm_writeCharBitmap2Display(ltr_bitmap_t *bitmap, ledm_display_t *display,
+        int8_t rowOffset, int16_t colOffset);
 uint16_t dspm_writeString2Display(char str[], ledm_display_t *display,
         int8_t rowOffset, int16_t colOffset);
 void dspm_showBitmap(btm_bitmap_t *bitmap, ledm_display_t *display,

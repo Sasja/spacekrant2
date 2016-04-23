@@ -35,6 +35,11 @@ uint8_t dspm_writeChar2Display(char c, ledm_display_t *display,
         int8_t rowOffset, int16_t colOffset)
 {
     ltr_bitmap_t *bitmap = ltr_lookupBitmap(c);
+    dspm_writeCharBitmap2Display(bitmap, display, rowOffset, colOffset);
+}
+
+uint8_t dspm_writeCharBitmap2Display(ltr_bitmap_t *bitmap, ledm_display_t * display, int8_t rowOffset, int16_t colOffset)
+{
     uint8_t width = ltr_getCharLength(bitmap);
     // loop over all lines of bitmap
     for(uint8_t charRow = 0; charRow<LEDM_ROWS; charRow++) {

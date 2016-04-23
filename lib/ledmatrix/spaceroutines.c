@@ -352,8 +352,29 @@ static void conwayFrameTick(ledm_display_t *dsp) {
     // this might cause some delay
     if(conwayNewSerialDataAvailable) {
         conwayNewSerialDataAvailable = false;
-        uint8_t width = ltr_getCharLength(ltr_lookupBitmap(conwaySerialData));
-        dspm_writeChar2Display(conwaySerialData, dsp, 0, (LEDM_COLS - width)/2);   // some input to feed conway
+        ltr_bitmap_t *letter;
+        switch(conwaySerialData) {
+            case 's':
+                letter = &ltr_glider1;
+                break;
+            case 'w':
+                letter = &ltr_glider2;
+                break;
+            case 'q':
+                letter = &ltr_glider3;
+                break;
+            case 'a':
+                letter = &ltr_glider4;
+                break;
+            case 'l':
+                letter = &ltr_lwss;
+                break;
+            default:
+                letter = ltr_lookupBitmap(conwaySerialData);
+        }
+        uint8_t width = ltr_getCharLength(letter);
+        //dspm_writeChar2Display(conwaySerialData, dsp, 0, (LEDM_COLS - width)/2);   // some input to feed conway
+        dspm_writeCharBitmap2Display(letter, dsp, 0, (LEDM_COLS - width)/2);   // some input to feed conway
     }
     
     static uint8_t pcnt;
