@@ -36,6 +36,9 @@ static void conwayFrameTick(ledm_display_t*);
 
 static void whitespaceInit(ledm_display_t*);
 static void whitespaceFrame(ledm_display_t*);
+
+static void streamInit(ledm_display_t*);
+static void streamData(uint8_t, ledm_display_t*);
 // ========================== Variables =========================
 
 static char textBuffer[TEXTBUFFERSIZE] = {'\0'};
@@ -106,6 +109,13 @@ static spr_routine_t whitespaceRoutine = {
     .handleRowTick = nop,
 };
 
+static spr_routine_t streamRoutine = {
+    .init = streamInit,
+    .handleData = streamData,
+    .handleFrameTick = nop,
+    .handleRowTick = nop,
+};
+
 static spr_routine_t *routines[] = {
     &nopRoutine,            // a
     &fillRoutine,           // b
@@ -115,6 +125,7 @@ static spr_routine_t *routines[] = {
     &textScrollerRoutine,   // f
     &conwayRoutine,         // g
     &whitespaceRoutine,     // h
+    &streamRoutine,         // i
 };
 
 spr_routine_t *spr_currentRoutine = &nopRoutine;
@@ -405,6 +416,8 @@ static void conwayFrameTick(ledm_display_t *dsp) {
     newBufferReady = true;      // conwayBuffer is ready to be processed and displayed
 }
 
+// ============== whitespace logo vertical scroll ===========
+
 static uint8_t whitespace_pos; // to begin with empty screen
 static void whitespaceInit(ledm_display_t *display) {
     whitespace_pos = 16; // to begin with empty screen
@@ -418,4 +431,18 @@ static void whitespaceFrame(ledm_display_t *display) {
 
     if(++whitespace_pos >= btm_whitespaceLogo.height) whitespace_pos = 0;
     dspm_showBitmap(&btm_whitespaceLogo, display, whitespace_pos,0);
+}
+
+// ============== stream data to display ===========
+static uint8_t stream_dispByteNr = 0;
+static void streamInit(ledm_display_t* display) {
+    stream_dispByteNr = 0;
+    dspm_clear(display);
+}
+
+static void streamData(uint8_t data, ledm_display_t *display) {
+    uint8_t row = stream_dispByteNr / LEDM_COLBYTES;
+    uint8_t col = stream_dispByteNr % LEDM_COLBYTES;
+    display->buffer[row][col] = data;
+    if(++stream_dispByteNr >= LEDM_ROWS*LEDM_COLBYTES) stream_dispByteNr=0;
 }
