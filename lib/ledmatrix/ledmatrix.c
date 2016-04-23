@@ -14,11 +14,12 @@ static const EMPTYLINE[LEDM_COLBYTES];
 // ============================ Macros ==========================
 
 // ====================== Non-API Prototypes ====================
-void setupSPI();
-void rowISR();
+static void setupSPI();
+static void rowISR();
+static void setupPins();
 
 // ========================== Variables =========================
-ledm_display_t *currentDisplay = NULL;
+static ledm_display_t *currentDisplay = NULL;
 
 // ======================== Implementation ======================
 void ledm_setup() {
@@ -32,25 +33,25 @@ void ledm_setDisp(ledm_display_t *display) {
     currentDisplay = display;
 }
 
-void resetHwCounter() {
+static void resetHwCounter() {
     digitalWrite(RESET, HIGH);
     digitalWrite(RESET, LOW);
 }
 
-void incHwCounter() {
+static void incHwCounter() {
     digitalWrite(CLOCK, HIGH);
     digitalWrite(CLOCK, LOW);
 }
 
-void latchOn() {
+static void latchOn() {
     bitSet(PORTB, LATCHPINNR);
 }
 
-void latchOff() {
+static void latchOff() {
     bitClear(PORTB, LATCHPINNR);
 }
 
-void pushLedRow(uint8_t data[LEDM_COLBYTES]) {
+static void pushLedRow(uint8_t data[LEDM_COLBYTES]) {
     latchOff();
     for(int i=0; i<LEDM_COLBYTES; i++) {
         SPDR = data[i];
@@ -59,7 +60,7 @@ void pushLedRow(uint8_t data[LEDM_COLBYTES]) {
     latchOn();
 }
 
-void rowISR() {
+static void rowISR() {
     static uint8_t nextRow = 0;
     // clear the current ledlrow
     pushLedRow(EMPTYLINE);
@@ -79,7 +80,7 @@ void rowISR() {
     }
 }
 
-void setupSPI() {
+static void setupSPI() {
     uint8_t clr;
     SPCR |= ( (1<<SPE) | (1<<MSTR) );   // enable SPI as master
     SPCR &= ~( (1<<SPR1) | (1<<SPR0) ); // clear prescaler bits
@@ -87,7 +88,7 @@ void setupSPI() {
     delay(10);
 }
 
-void setupPins() {
+static void setupPins() {
     pinMode(DATAPIN,OUTPUT);
     pinMode(CLOCKPIN,OUTPUT);
     pinMode(LATCHPIN,OUTPUT);

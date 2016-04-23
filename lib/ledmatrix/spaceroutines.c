@@ -9,34 +9,37 @@
 // ====================== Non-API Prototypes ====================
 // ---------------------- helper methods ------------------------
 
-void textBuffer_handle(char data);
-void textBuffer_clear();
+static void textBuffer_handle(char data);
+static void textBuffer_clear();
 
-void wrapRight(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]);
-void wrapLeft(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]);
-void wrapUp(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]);
-void wrapDown(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]);
+static void wrapRight(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]);
+static void wrapLeft(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]);
+static void wrapUp(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]);
+static void wrapDown(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]);
 
 // ---------------------- for the routines ----------------------
 
-void nopData(uint8_t, ledm_display_t*);
-void nop(ledm_display_t*);
+static void nopData(uint8_t, ledm_display_t*);
+static void nop(ledm_display_t*);
 
-void counter144Tick(ledm_display_t*);
+static void counter144Tick(ledm_display_t*);
 
-void whatsupFrame(ledm_display_t*);
+static void whatsupFrame(ledm_display_t*);
 
-void textScrollerInit(ledm_display_t*);
-void textScrollerData(uint8_t, ledm_display_t*);
-void textScrollerFrame(ledm_display_t*);
+static void textScrollerInit(ledm_display_t*);
+static void textScrollerData(uint8_t, ledm_display_t*);
+static void textScrollerFrame(ledm_display_t*);
 
-void conwayInit(ledm_display_t*);
-void conwayData(uint8_t, ledm_display_t*);
-void conwayFrameTick(ledm_display_t*);
+static void conwayInit(ledm_display_t*);
+static void conwayData(uint8_t, ledm_display_t*);
+static void conwayFrameTick(ledm_display_t*);
+
+static void whitespaceInit(ledm_display_t*);
+static void whitespaceFrame(ledm_display_t*);
 // ========================== Variables =========================
 
-char textBuffer[TEXTBUFFERSIZE] = {'\0'};
-uint8_t textBuffer_pos = 0;
+static char textBuffer[TEXTBUFFERSIZE] = {'\0'};
+static uint8_t textBuffer_pos = 0;
 
 // i'll put this here as a reference ;)
 //
@@ -47,56 +50,63 @@ uint8_t textBuffer_pos = 0;
 //     void (*handleRowTick)(ledm_display_t *dsp);
 // } spr_routine_t;
 
-spr_routine_t nopRoutine = {
+static spr_routine_t nopRoutine = {
     .init = nop,
     .handleData = nopData,
     .handleFrameTick = nop,
     .handleRowTick = nop
 };
 
-spr_routine_t fillRoutine = {
+static spr_routine_t fillRoutine = {
     .init = dspm_fill,
     .handleData = nopData,
     .handleFrameTick = nop,
     .handleRowTick = nop
 };
 
-spr_routine_t clearRoutine = {
+static spr_routine_t clearRoutine = {
     .init = dspm_clear,
     .handleData = nopData,
     .handleFrameTick = nop,
     .handleRowTick = nop
 };
 
-spr_routine_t counter144Routine = {
+static spr_routine_t counter144Routine = {
     .init = dspm_clear,
     .handleData = nopData,
     .handleFrameTick = nop,
     .handleRowTick = counter144Tick
 };
 
-spr_routine_t whatsupRoutine = {
+static spr_routine_t whatsupRoutine = {
     .init = dspm_clear,
     .handleData = nopData,
     .handleFrameTick = whatsupFrame,
     .handleRowTick = nop
 };
 
-spr_routine_t textScrollerRoutine = {
+static spr_routine_t textScrollerRoutine = {
     .init = textScrollerInit,
     .handleData = textScrollerData,
     .handleFrameTick = textScrollerFrame,
     .handleRowTick = nop
 };
 
-spr_routine_t conwayRoutine = {
+static spr_routine_t conwayRoutine = {
     .init = conwayInit,
     .handleData = conwayData,
     .handleFrameTick = conwayFrameTick,
     .handleRowTick = nop,
 };
 
-spr_routine_t *routines[] = {
+static spr_routine_t whitespaceRoutine = {
+    .init = whitespaceInit,
+    .handleData = nopData,
+    .handleFrameTick = whitespaceFrame,
+    .handleRowTick = nop,
+};
+
+static spr_routine_t *routines[] = {
     &nopRoutine,            // a
     &fillRoutine,           // b
     &clearRoutine,          // c
@@ -104,9 +114,11 @@ spr_routine_t *routines[] = {
     &whatsupRoutine,        // e
     &textScrollerRoutine,   // f
     &conwayRoutine,         // g
+    &whitespaceRoutine,     // h
 };
 
 spr_routine_t *spr_currentRoutine = &nopRoutine;
+//spr_routine_t *spr_currentRoutine = &whitespaceRoutine;
 
 // ======================== Implementation ======================
 
@@ -120,7 +132,7 @@ void spr_loadRoutineNr(uint8_t nr) {
 
 // --------------- textBuffer -------------------
 
-void textBuffer_handle(char data) {
+static void textBuffer_handle(char data) {
     if(data == 0x7 || data == 0x7f) { // del or backspace
         if(textBuffer_pos > 0) {
             textBuffer[textBuffer_pos--] = '\0';
@@ -134,14 +146,14 @@ void textBuffer_handle(char data) {
     }
 }
 
-void textBuffer_clear() {
+static void textBuffer_clear() {
     textBuffer_pos = 0;
     textBuffer[0] = '\0';
 }
 
 // --------------- shifting V & H ----------------
 
-inline void wrapRight(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
+static inline void wrapRight(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
     for(uint8_t row = 0; row < LEDM_ROWS; row++) {
         bool lastCarry = false;
         for(uint8_t colByte = 0; colByte < LEDM_COLBYTES; colByte++) {
@@ -154,7 +166,7 @@ inline void wrapRight(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
     }
 }
 
-inline void wrapLeft(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
+static inline void wrapLeft(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
     for(uint8_t row = 0; row < LEDM_ROWS; row++) {
         bool lastCarry = false;
         for(int8_t colByte = LEDM_COLBYTES-1; colByte >= 0; colByte--) {
@@ -167,7 +179,7 @@ inline void wrapLeft(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
     }
 }
 
-inline void wrapUp(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
+static inline void wrapUp(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
     for(uint8_t colByte = 0; colByte < LEDM_COLBYTES; colByte++) {
         uint8_t firstRow = buffer[0][colByte];
         for(uint8_t row = 0; row < LEDM_ROWS-1; row++) {
@@ -177,7 +189,7 @@ inline void wrapUp(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
     }
 }
 
-inline void wrapDown(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
+static inline void wrapDown(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
     for(uint8_t colByte = 0; colByte < LEDM_COLBYTES; colByte++) {
         uint8_t lastRow = buffer[LEDM_ROWS-1][colByte];
         for(int8_t row = LEDM_ROWS-1; row >= 1; row--) {
@@ -189,10 +201,10 @@ inline void wrapDown(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES]) {
 
 // =================counter144====================
 
-void nopData(uint8_t data, ledm_display_t *dsp) {}
-void nop(ledm_display_t *dsp) {}
+static void nopData(uint8_t data, ledm_display_t *dsp) {}
+static void nop(ledm_display_t *dsp) {}
 
-void counter144Tick(ledm_display_t* dsp) {
+static void counter144Tick(ledm_display_t* dsp) {
     for(int r=LEDM_ROWS-1; r>=0; r--) {
         for(int c=LEDM_COLBYTES-1; c>=0; c--) {
             if(++dsp->buffer[r][c] != 0) return;
@@ -202,7 +214,7 @@ void counter144Tick(ledm_display_t* dsp) {
 
 // ===============whatsup=========================
 
-void whatsupFrame(ledm_display_t* dsp) {
+static void whatsupFrame(ledm_display_t* dsp) {
     static uint8_t prescaler;
     prescaler = (prescaler + 1) % 20;
     if(prescaler) return;
@@ -215,11 +227,11 @@ void whatsupFrame(ledm_display_t* dsp) {
 
 // =============textScroller======================
 
-uint8_t textScroller_prescaler = 16;
-int16_t textScroller_width = 0;
-int16_t textScroller_offset = 0;
+static uint8_t textScroller_prescaler = 16;
+static int16_t textScroller_width = 0;
+static int16_t textScroller_offset = 0;
 
-void textScroller_update(ledm_display_t *dsp) {
+static void textScroller_update(ledm_display_t *dsp) {
     dspm_clear(dsp);
     textScroller_width = dspm_writeString2Display(
             textBuffer,
@@ -228,12 +240,12 @@ void textScroller_update(ledm_display_t *dsp) {
             textScroller_offset);
 }
 
-void textScrollerInit(ledm_display_t *dsp) {
+static void textScrollerInit(ledm_display_t *dsp) {
     textBuffer_clear();
     textScroller_update(dsp);
 }
 
-void textScrollerData(uint8_t data, ledm_display_t *dsp) {
+static void textScrollerData(uint8_t data, ledm_display_t *dsp) {
     static bool escaped = false;
     if(escaped) {                                   // set speed trough double escaped data
         escaped = false;
@@ -248,7 +260,7 @@ void textScrollerData(uint8_t data, ledm_display_t *dsp) {
     }
 }
 
-void textScrollerFrame(ledm_display_t *dsp) {
+static void textScrollerFrame(ledm_display_t *dsp) {
     static uint8_t pcnt;
     pcnt = (pcnt + 1) % textScroller_prescaler;
     if(pcnt) return;
@@ -262,18 +274,18 @@ void textScrollerFrame(ledm_display_t *dsp) {
 
 // ============== Conways game of life ===========
 
-uint8_t conwayBuffer[LEDM_ROWS][LEDM_COLS];
-uint8_t conwayDispBuffer[LEDM_ROWS][LEDM_COLBYTES];
-uint8_t conwaySerialData;
-bool conwayNewSerialDataAvailable = false;
-uint8_t conwayPrescaler = 16;
+static uint8_t conwayBuffer[LEDM_ROWS][LEDM_COLS];
+static uint8_t conwayDispBuffer[LEDM_ROWS][LEDM_COLBYTES];
+static uint8_t conwaySerialData;
+static bool conwayNewSerialDataAvailable = false;
+static uint8_t conwayPrescaler = 16;
 
-inline void conwayClearBuff() {
+static inline void conwayClearBuff() {
     memset(conwayBuffer, 0, sizeof(conwayBuffer[0][0])*LEDM_ROWS*LEDM_COLS);
 }
 
 
-inline void conwayAccum(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES], const int8_t weight) {
+static inline void conwayAccum(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES], const int8_t weight) {
     for(uint8_t row = 0; row < LEDM_ROWS; row++) {
         for(uint8_t colByte = 0; colByte < LEDM_COLBYTES; colByte++) {
             uint8_t bits = buffer[row][colByte];
@@ -285,7 +297,7 @@ inline void conwayAccum(uint8_t buffer[LEDM_ROWS][LEDM_COLBYTES], const int8_t w
     }
 }
 
-void conwayBuff2Disp(ledm_display_t *dsp) {
+static void conwayBuff2Disp(ledm_display_t *dsp) {
     for(uint8_t row = 0; row < LEDM_ROWS; row++) {
         for(uint8_t colByte = 0; colByte < LEDM_COLBYTES; colByte++) {
             uint8_t bits = 0;
@@ -299,11 +311,11 @@ void conwayBuff2Disp(ledm_display_t *dsp) {
     }
 }
 
-void conwayInit(ledm_display_t *dsp) {
+static void conwayInit(ledm_display_t *dsp) {
     // do nothing, just iterate on display content
 }
 
-void conwayData(uint8_t data, ledm_display_t *dsp) {
+static void conwayData(uint8_t data, ledm_display_t *dsp) {
     // dont just draw here or it might be overwitten with results before taken into account.
     static bool escaped = false;
     if(escaped) {
@@ -319,7 +331,17 @@ void conwayData(uint8_t data, ledm_display_t *dsp) {
     }
 }
 
-void conwayFrameTick(ledm_display_t *dsp) {
+static void conwayFrameTick(ledm_display_t *dsp) {
+    // static char c = 'A';
+    // static int16_t pcnt2 = -1;
+    // pcnt2 = (pcnt2 + 1) % (10*1000/6);
+    // if(pcnt2==0) {
+    //     uint8_t w = ltr_getCharLength(ltr_lookupBitmap(conwaySerialData));
+    //     dspm_writeChar2Display(c, dsp, 0, (LEDM_COLS - w)/2);   // some input to feed conway
+    //     c++;
+    //     if (c == 'z') c = 'A';
+    // }
+
     static bool newBufferReady = false;
     if(newBufferReady) {
         newBufferReady = false;
@@ -360,4 +382,19 @@ void conwayFrameTick(ledm_display_t *dsp) {
     conwayAccum(conwayDispBuffer, 1);        // 9
     // some lines of the next frame will be drawn by now, so wait for new frametick to update display
     newBufferReady = true;      // conwayBuffer is ready to be processed and displayed
+}
+
+static uint8_t whitespace_pos; // to begin with empty screen
+static void whitespaceInit(ledm_display_t *display) {
+    whitespace_pos = 16; // to begin with empty screen
+    dspm_showBitmap(&btm_whitespaceLogo, display, 0,0);
+}
+
+static void whitespaceFrame(ledm_display_t *display) {
+    static uint8_t pcnt;
+    pcnt = (pcnt + 1) % 32;
+    if(pcnt) return;
+
+    if(++whitespace_pos >= btm_whitespaceLogo.height) whitespace_pos = 0;
+    dspm_showBitmap(&btm_whitespaceLogo, display, whitespace_pos,0);
 }

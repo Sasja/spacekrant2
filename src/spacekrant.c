@@ -1,5 +1,8 @@
+#include <Arduino.h>
+#include "Serial_C.h"
 #include "spacekrant.h"
 #include "spaceroutines.h"
+#include "ledmatrix.h"
 
 // ========================== Constants =========================
 
@@ -20,6 +23,7 @@ void setup() {
     Serial_begin(9600);
     ledm_setup();
     ledm_setDisp(&display);
+    spr_currentRoutine->init(&display);
 }
 
 void loop() {

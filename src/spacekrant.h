@@ -1,10 +1,10 @@
 #ifndef SPACEKRANT_H
 #define SPACEKRANT_H
 
-#include <Arduino.h>
-#include "Serial_C.h"
-#include "ledmatrix.h"
-#include "displaymethods.h"
+//#include <Arduino.h>
+//#include "Serial_C.h"
+//#include "ledmatrix.h"
+//#include "displaymethods.h"
 //#include "spaceroutines.h"
 
 // =========================== Constants ========================

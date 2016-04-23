@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 ltr_bitmap_t *ltr_lookupBitmap(char c);
-inline uint8_t ltr_getCharLength(ltr_bitmap_t *bitmap);
+uint8_t ltr_getCharLength(ltr_bitmap_t *bitmap);
 
 #if defined(__cplusplus)
 }

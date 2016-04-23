@@ -77,3 +77,16 @@ uint16_t dspm_writeString2Display(char str[], ledm_display_t *display,
     }
     return width;
 }
+
+void dspm_showBitmap(btm_bitmap_t *bitmap, ledm_display_t *display,
+        int8_t rowOffset, int8_t colOffset) {
+    // TODO offsets sideways
+    for(uint8_t r = 0; r<LEDM_ROWS; r++) {
+        for(uint8_t colb = 0; colb<LEDM_COLBYTES; colb++) {
+            uint8_t bmrow = (r + rowOffset) % bitmap->height;
+            uint8_t index = bmrow * bitmap->widthbytes + colb;
+            display->buffer[r][colb] = 
+                bitmap->buffer[index];
+        }
+    }
+}
