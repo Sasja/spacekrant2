@@ -3,7 +3,7 @@ Firmware for driving the 6 x 24 led matrix display of [whitespace](https://0x21.
 More info on the [project page](https://0x21.be/index.php/spacekrant)
 
 # how to build/upload/test
-0. 'sudo apt-get install pip picocom'
+0. 'sudo apt-get install pip picocom arduino'
 1. 'sudo pip install configobj glob2'
 2. install ino (http://inotool.org)
 3. run 'ino build -v --cflags="-std=c99"'
