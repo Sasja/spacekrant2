@@ -7,6 +7,7 @@
 
 which socat > /dev/null || { echo "Must have socat installed!"; exit 1; }
 which picocom > /dev/null || { echo "Must have picocom installed!"; exit 1; }
+which screen > /dev/null || { echo "Must have screen installed!"; exit 1; }
 
 # if [[ $EUID -ne 0 ]]; then
 #     echo "You must be a root user"
@@ -19,7 +20,9 @@ DEVICENAME=/dev/ttyACM0
 WELCOMEMSG=welcome.txt
 INACT_TIMEOUT=10
 
-stty -F ${DEVICENAME} sane -hupcl || { echo "could not disable hangup signal on device ${DEVICENAME}"; exit 1; }
+#stty -F ${DEVICENAME} sane -hupcl || { echo "could not disable hangup signal on device ${DEVICENAME}"; exit 1; }
+# the above doesnt seem to prevent arduino reset on echelon, so therefore the hack below will do the trick by keeping the serial open.
+screen -dmS spacekrant picocom --nolock ${DEVICENAME}
 
 while true; do
     echo "listening for new tcp connection"
