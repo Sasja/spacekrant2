@@ -5,10 +5,7 @@
 # inactivity for n secondes terminates the connection
 # - Sasja
 
-echo "this hasnt been tested yet!"
-exit 1
-
-which rocat > /dev/null || { echo "Must have socat installed!"; exit 1; }
+which socat > /dev/null || { echo "Must have socat installed!"; exit 1; }
 
 # if [[ $EUID -ne 0 ]]; then
 #     echo "You must be a root user"
@@ -16,10 +13,12 @@ which rocat > /dev/null || { echo "Must have socat installed!"; exit 1; }
 # fi
 
 PORT=1337
-#DEVICENAME=/dev/footty
-DEVICENAME=OPEN:tmp.txt,ignoreeof,append # just for testing
+DEVICENAME=/dev/ttyACM0
+#DEVICENAME=OPEN:tmp.txt,ignoreeof,append #for testing
 WELCOMEMSG=welcome.txt
 INACT_TIMEOUT=10
+
+stty -F ${DEVICENAME} -hup || { echo "could not disable hangup signal on device ${DEVICENAME}"; exit 1; }
 
 while true; do
     echo "starting new serial connection"
