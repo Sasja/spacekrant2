@@ -15,13 +15,11 @@
 case "$1" in 
     start)
         echo "Starting spacekrant service"
-        #/home/echelon/spacekrant2/tcp/startSpaceService.sh
-        ( cd /home/pollywog/Desktop/spacekrant2/tcp && ./startSpaceService.sh > /dev/null 2>&1 ) &
+        ( cd /home/echelon/spacekrant2/tcp && ./startSpaceService.sh > /dev/null 2>&1 ) &
         ;;
     stop)
-        echo "Stopping spacekrant service (not really)"
-        #/home/echelon/spacekrant2/tcp/stopSpaceService.sh
-        ( cd /home/pollywog/Desktop/spacekrant2/tcp && ./stopSpaceService.sh > /dev/null 2>&1 ) &
+        echo "Cleaning up spacekrant service (not really, todo)"
+        ( cd /home/echelon/spacekrant2/tcp && ./stopSpaceService.sh > /dev/null 2>&1 ) &
         ;;
     *)
         echo "Usage: /etc/init.d/spacekrant start|stop"
