@@ -20,11 +20,13 @@ DEVICENAME=/dev/ttyACM0
 WELCOMEMSG=welcome.txt
 INACT_TIMEOUT=10
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 #stty -F ${DEVICENAME} sane -hupcl || { echo "could not disable hangup signal on device ${DEVICENAME}"; exit 1; }
 # the above doesnt seem to prevent arduino reset on echelon, so therefore the hack below will do the trick by keeping the serial open.
 screen -dmS spacekrant picocom --nolock ${DEVICENAME}
 
 while true; do
     echo "listening for new tcp connection"
-    socat -T ${INACT_TIMEOUT} TCP4-LISTEN:${PORT},reuseaddr OPEN:${WELCOMEMSG},ignoreeof\!\!OPEN:${DEVICENAME},raw,echo=0 || { echo retry in 10s; sleep 10; }
+    socat -T ${INACT_TIMEOUT} TCP4-LISTEN:${PORT},reuseaddr OPEN:${DIR}/${WELCOMEMSG},ignoreeof\!\!OPEN:${DEVICENAME},raw,echo=0 || { echo retry in 10s; sleep 10; }
 done
