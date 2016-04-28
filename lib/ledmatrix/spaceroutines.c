@@ -1,7 +1,7 @@
 #include "spaceroutines.h"
 #include "displaymethods.h"
 
-#define TEXTBUFFERSIZE 64
+#define TEXTBUFFERSIZE 255
 // ========================== Constants =========================
 
 // ============================ Macros ==========================
