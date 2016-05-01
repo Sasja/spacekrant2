@@ -39,6 +39,10 @@ static void whitespaceFrame(ledm_display_t*);
 
 static void streamInit(ledm_display_t*);
 static void streamData(uint8_t, ledm_display_t*);
+
+static void textStaticInit(ledm_display_t*);
+static void textStaticData(uint8_t, ledm_display_t*);
+
 // ========================== Variables =========================
 
 static char textBuffer[TEXTBUFFERSIZE] = {'\0'};
@@ -116,6 +120,13 @@ static spr_routine_t streamRoutine = {
     .handleRowTick = nop,
 };
 
+static spr_routine_t textStaticRoutine = {
+    .init = textStaticInit,
+    .handleData = textStaticData,
+    .handleFrameTick = nop,
+    .handleRowTick = nop,
+};
+
 static spr_routine_t *routines[] = {
     &nopRoutine,            // a
     &fillRoutine,           // b
@@ -126,6 +137,7 @@ static spr_routine_t *routines[] = {
     &conwayRoutine,         // g
     &whitespaceRoutine,     // h
     &streamRoutine,         // i
+    &textStaticRoutine,     // j
 };
 
 spr_routine_t *spr_currentRoutine = &nopRoutine;
@@ -446,3 +458,31 @@ static void streamData(uint8_t data, ledm_display_t *display) {
     display->buffer[row][col] = data;
     if(++stream_dispByteNr >= LEDM_ROWS*LEDM_COLBYTES) stream_dispByteNr=0;
 }
+// ============== static text to display ===========
+static void textStatic_update(ledm_display_t *dsp) {
+    dspm_clear(dsp);
+    textScroller_width = dspm_writeString2Display(
+            textBuffer,
+            dsp,
+            0,
+            0);
+}
+
+static void textStaticInit(ledm_display_t *dsp) {
+    textBuffer_clear();
+}
+
+static void textStaticData(uint8_t data, ledm_display_t *dsp) {
+    static bool escaped = false;
+    if(escaped) {
+        escaped = false;
+    } else {
+        if (data == 0x1b) {                         // a first ESC
+            escaped = true;
+        } else {
+            textBuffer_handle(data);
+            textStatic_update(dsp);
+        }
+    }
+}
+
