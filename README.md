@@ -17,12 +17,22 @@ send each routine some data...
 caveat: if you need to send a routine an 0x1B (ESC), then you have to escape ESC with ESC. So double ESC.
 
 # how to talk to the spacekrant
+'''
 picocom /dev/ttyACM0
+'''
 
 or
 
+'''
 minicom -D /dev/ttyACM0 -b 9600
+'''
 
 # how to write your own spacekrant routine 
 
 TODO
+
+# how to run it on startup, quick and dirty
+
+'''
+@reboot sleep 30 && /home/whitespace/spacekrant2/tcp/startSpaceService.sh >/dev/null 2>&1 &
+'''
