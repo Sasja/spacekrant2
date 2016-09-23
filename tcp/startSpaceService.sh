@@ -24,6 +24,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 #stty -F ${DEVICENAME} sane -hupcl || { echo "could not disable hangup signal on device ${DEVICENAME}"; exit 1; }
 # the above doesnt seem to prevent arduino reset on echelon, so therefore the hack below will do the trick by keeping the serial open.
+# running this script from crontab @reboot may require a bit of sleeping in advance
 screen -dmS spacekrant picocom --nolock ${DEVICENAME}
 
 while true; do
